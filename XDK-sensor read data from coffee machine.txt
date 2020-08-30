@@ -1,0 +1,90 @@
+package main; 
+import platforms.xdk110; 
+
+setup net: WLAN { 
+
+ssid = "Polisea"; 
+
+    authentication = Personal(psk = "AAAAAAAA"); 
+} 
+
+setup backend: MQTT {  	
+ transport = net; 
+  url = "mqtt://40.68.172.187:1883"; 
+  clientId = "RiELftL1TKIHlNxtPZJsA2Rv"; 
+  authentication = Login("maker:4RMakyzCtY5ou0Nw7zXLsFmDiiNQya9lArNnWoZ1", "polisea&iot"); 
+  
+ 
+  var telemetry0 = topic("device/RiELftL1TKIHlNxtPZJsA2Rv/asset/Temperature/state"); 
+  var telemetry1 = topic("device/RiELftL1TKIHlNxtPZJsA2Rv/asset/Humidity/state");
+  var telemetry2 = topic("device/RiELftL1TKIHlNxtPZJsA2Rv/asset/Accel/state");
+  var telemetry3 = topic("device/RiELftL1TKIHlNxtPZJsA2Rv/asset/Pressure/state");   
+  var telemetry4 = topic("device/RiELftL1TKIHlNxtPZJsA2Rv/asset/Light/state");
+  var telemetry5 = topic("device/RiELftL1TKIHlNxtPZJsA2Rv/asset/Magnetometer/state");
+  var telemetry6 = topic("device/RiELftL1TKIHlNxtPZJsA2Rv/asset/Microphone/state"); 
+} 
+
+ 
+
+fn getCelciusString(){ 
+	var celcius = environment.temperature.read()/1000; 
+	return (`{"value": ${(celcius)}}`);} 
+
+fn getHumidityString(){ 
+	var humidity = environment.humidity.read(); 
+	return (`{"value": ${(humidity)}}`);}
+
+fn getAccelerometerString(){ 
+	var accelerometer = accelerometer.magnitude.read()/100; 
+	return (`{"value": ${(accelerometer)}}`);}
+
+fn getPressureString(){ 
+	var pressure = environment.pressure.read()/1000; 
+	return (`{"value": ${(pressure)}}`);}
+
+fn getLightString(){ 
+	var light = light.intensity.read()/1000; 
+	return (`{"value": ${(light)}}`);} 
+
+fn getMagnetometerString(){
+	var magnetometer = magnetometer.resistance.read()/100;
+	return (`{"value": ${(magnetometer)}}`);}	
+
+fn getNoiseFloating(){
+	var noise = noise_sensor.noise.read()*10000;
+	return (`{"value": ${(noise)}}`);}
+ 
+var count = 0;
+every 10 seconds{ 
+	count++;
+	if (count==1){
+	backend.telemetry0.write(getCelciusString()); 
+	println(getCelciusString());}
+	
+	if(count==2){
+	backend.telemetry1.write(getHumidityString()); 
+	println(getHumidityString()); }
+	
+	if(count==3){
+	backend.telemetry2.write(getAccelerometerString()); 
+    println(getAccelerometerString());}
+    
+    if(count==4){
+    backend.telemetry3.write(getPressureString()); 
+    println(getPressureString());}
+    
+    if(count==5){
+    backend.telemetry4.write(getLightString()); 
+    println(getLightString());}
+    
+    if(count==6){
+    backend.telemetry5.write(getMagnetometerString()); 
+    println(getMagnetometerString());
+	}
+    
+	if(count == 7){
+    backend.telemetry6.write(getNoiseFloating()); 
+	println(getNoiseFloating()); 
+	count=0;
+	}
+	}

@@ -1,0 +1,104 @@
+/** 
+ * Welcome to Eclipse Mita. 
+ * 
+ * Not sure what to do now? 
+ * Check out the "Getting started" guide on https://mita.io. 
+ */ 
+package main; 
+import platforms.xdk110; 
+
+setup net: WLAN { 
+ssid = "Hala"; 
+
+    authentication = Personal(psk = "AAAAAAAA"); 
+} 
+setup backend: MQTT { 
+
+  transport = net; 
+
+  url = "mqtt://mqtt.mydevices.com:1883"; 
+
+  clientId = "9abf60e0-bf4a-11ea-883c-638d8ce4c23d"; 
+
+  authentication = Login("160c67c0-b61d-11ea-a67f-15e30d90bbf4", "f17544f0eef797fbb59e9b568772f6e63e8af6dc"); 
+
+  var telemetry0 = topic("v1/160c67c0-b61d-11ea-a67f-15e30d90bbf4/things/9abf60e0-bf4a-11ea-883c-638d8ce4c23d/data/1"); 
+  var telemetry1 = topic("v1/160c67c0-b61d-11ea-a67f-15e30d90bbf4/things/9abf60e0-bf4a-11ea-883c-638d8ce4c23d/data/2"); 
+  var telemetry2 = topic("v1/160c67c0-b61d-11ea-a67f-15e30d90bbf4/things/9abf60e0-bf4a-11ea-883c-638d8ce4c23d/data/3"); 
+  var telemetry3 = topic("v1/160c67c0-b61d-11ea-a67f-15e30d90bbf4/things/9abf60e0-bf4a-11ea-883c-638d8ce4c23d/data/4"); 
+  var telemetry4 = topic("v1/160c67c0-b61d-11ea-a67f-15e30d90bbf4/things/9abf60e0-bf4a-11ea-883c-638d8ce4c23d/data/5"); 
+  var telemetry5 = topic("v1/160c67c0-b61d-11ea-a67f-15e30d90bbf4/things/9abf60e0-bf4a-11ea-883c-638d8ce4c23d/data/6"); 
+
+} 
+
+ 
+
+fn getCelciusString(){ 
+var celcius = environment.temperature.read()/1000; 
+return `temp, c= ${(celcius)}`; 
+} 
+fn getHumidityString(){ 
+var humidity = environment.humidity.read(); 
+return `humidity, h= ${(humidity)}`; 
+} 
+fn getAccelerometerString(){ 
+var accelerometer = accelerometer.magnitude.read()/100; 
+return `magt, a= ${(accelerometer)}`; 
+} 
+fn getLightString(){ 
+var light = light.intensity.read()/1000; 
+return `lux, l= ${(light)}`; 
+} 
+every 100 milliseconds { 
+	var celcius = environment.temperature.read()/1000;
+	var humidity = environment.humidity.read();
+	var accelerometer = accelerometer.magnitude.read(); 
+	var light = light.intensity.read()/1000;
+}
+
+every 1 seconds {
+	
+	if (environment.temperature.read()/1000 < 25) {
+		 backend.telemetry0.write(getCelciusString()); 
+ 	 	 println(getCelciusString());
+ 	 	}
+ 	if (environment.humidity.read() < 20) {
+ 	    	 backend.telemetry1.write(getHumidityString()); 
+    		 println(getHumidityString());
+   		}
+	if (accelerometer.magnitude.read() <= 60) {
+		backend.telemetry2.write(getAccelerometerString()); 		
+		println(getAccelerometerString()); 
+		} 
+ 	if (light.intensity.read()/1000 > 200) {
+ 		backend.telemetry4.write(getLightString()); 
+ 		println(getLightString());
+ 		}
+}
+every 30 seconds {
+ 	
+	if (environment.temperature.read()/1000 < 35) {
+		 backend.telemetry0.write(getCelciusString()); 
+ 	 	 println(getCelciusString());
+ 	 	 
+ 	 	 }
+ 	if (environment.humidity.read() < 40) {
+ 	    	 backend.telemetry1.write(getHumidityString()); 
+    		 println(getHumidityString());
+   		 }
+	if (accelerometer.magnitude.read() >= 40) {
+		backend.telemetry2.write(getAccelerometerString()); 
+		println(getAccelerometerString()); 
+		 } 
+ 	if (light.intensity.read()/1000 > 110) {
+  		 backend.telemetry4.write(getLightString()); 
+  		 println(getLightString());
+  		 } 
+}
+ 
+ 
+ 
+ 
+ 
+ 
+ 

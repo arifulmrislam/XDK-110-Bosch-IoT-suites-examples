@@ -1,0 +1,35 @@
+package main; 
+
+import platforms.xdk110; 
+
+setup xdksensor : BLE{ 
+
+deviceName = "XDK_BLE"; 
+
+macAddress = "FC:D6:BD:10:2C:46"; 
+
+var Celcius = uint32_characteristic(0x9a01); 
+var Humidity = uint32_characteristic(0x9b02); 
+var Light = uint32_characteristic(0x9c03); 
+var Accelerometer = uint32_characteristic(0x9d04);
+var Pressure = uint32_characteristic(0x9d05);
+var Magnetometer = uint32_characteristic(0x9d06);
+var Microphone = uint32_characteristic(0x9d07);
+
+}
+ 
+
+every 20 seconds{ 
+	xdksensor.Celcius.write(environment.temperature.read()/1000);
+	xdksensor.Humidity.write(environment.humidity.read());	
+	xdksensor.Light.write(light.intensity.read()/10);
+	xdksensor.Accelerometer.write(accelerometer.magnitude.read()/10);
+	xdksensor.Pressure.write(environment.pressure.read()/1000);	
+	xdksensor.Magnetometer.write(magnetometer.resistance.read()/100);
+	xdksensor.Microphone.write(noise_sensor.noise.read()*10000);	
+	}
+	
+
+	
+	
+	

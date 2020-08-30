@@ -1,0 +1,66 @@
+package main; 
+
+import platforms.xdk110; 
+
+setup xdksensor : BLE{ 
+
+deviceName = "XDK_BLE"; 
+
+macAddress = "FC:D6:BD:10:2C:46"; 
+
+Basic_data:
+var DEVICE_ACTIVITY = uint32_characteristic(0x9d18); 
+
+Enviromental_data - latest values:
+var SENSOR_ENVIRONMENTAL_TEMPERATURE = uint32_characteristic(0x9d01); 
+var SENSOR_ENVIRONMENTAL_HUMIDITY = uint32_characteristic(0x9d02);
+var SENSOR_ENVIRONMENTAL_PRESSURE = uint32_characteristic(0x9d03); 
+var SENSOR_ENVIRONMENTAL_LIGHT = uint32_characteristic(0x9d04);
+var SENSOR_ENVIRONMENTAL_NOISE = uint32_characteristic(0xd05);
+
+Accelerometer - latest values:
+var SENSOR_ACCELEROMETER_AXIS_X = uint32_characteristic(0x9d06);
+var SENSOR_ACCELEROMETER_AXIS_Y = uint32_characteristic(0x9d07);
+var SENSOR_ACCELEROMETER_AXIS_Z = uint32_characteristic(0x9d08);
+
+Gyroscope - latest values:
+var SENSOR_GYROSCOPE_AXIS_X = uint32_characteristic(0x9d09);
+var SENSOR_GYROSCOPE_AXIS_Y  = uint32_characteristic(0x9d10);
+var SENSOR_GYROSCOPE_AXIS_Z  = uint32_characteristic(0x9d11);
+
+Magnetometer - lstest vslues:
+var SENSOR_MAGNETOMETER_AXIS_X  = uint32_characteristic(0x9d12);
+var SENSOR_MAGNETOMETER_AXIS_Y  = uint32_characteristic(0x9d13);
+var SENSOR_MAGNETOMETER_AXIS_Z  = uint32_characteristic(0x9d14);
+
+}
+ 
+
+every 40 seconds{ 
+	xdksensor.DEVICE_ACTIVITY.write(XDK110.powerStatus.read());
+	
+	
+	
+	xdksensor.SENSOR_ENVIRONMENTAL_TEMPERATURE.write(environment.temperature.read()/1000);
+	xdksensor.SENSOR_ENVIRONMENTAL_HUMIDITY.write(environment.humidity.read());
+	xdksensor.SENSOR_ENVIRONMENTAL_PRESSURE.write(environment.pressure.read()/1000);	
+	xdksensor.SENSOR_ENVIRONMENTAL_LIGHT.write(light.intensity.read()/10);
+	xdksensor.SENSOR_ENVIRONMENTAL_NOISE.write(noise_sensor.noise.read()*10000);
+	
+	xdksensor.SENSOR_ACCELEROMETER_AXIS_X.write(accelerometer.magnitude.read()/10);
+	xdksensor.SENSOR_ACCELEROMETER_AXIS_Y.write(accelerometer.magnitude.read()/20);
+	xdksensor.SENSOR_ACCELEROMETER_AXIS_Z.write(accelerometer.magnitude.read()/30);
+	
+	xdksensor.SENSOR_GYROSCOPE_AXIS_X.write(gyroscope.x_axis.read()/10);
+	xdksensor.SENSOR_GYROSCOPE_AXIS_Y.write(gyroscope.y_axis.read()/20);
+	xdksensor.SENSOR_GYROSCOPE_AXIS_Z.write(gyroscope.z_axis.read()/30);
+	
+	xdksensor.SENSOR_MAGNETOMETER_AXIS_X.write(magnetometer.resistance.read()/100);
+	xdksensor.SENSOR_MAGNETOMETER_AXIS_Y.write(magnetometer.resistance.read()/150);
+	xdksensor.SENSOR_MAGNETOMETER_AXIS_Z.write(magnetometer.resistance.read()/200);	
+	
+	
+}
+	
+	
+	
